@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Strategy Builder</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f9f9f8;
+      --surface: #ffffff;
+      --border: #e4e4e0;
+      --border-focus: #1a1a1a;
+      --text: #1a1a1a;
+      --muted: #888880;
+      --accent: #1a1a1a;
+      --tag-bg: #f0f0ec;
+      --tag-text: #1a1a1a;
+      --radius: 10px;
+      --gap: 28px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 48px 24px 80px;
+    }
+
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 48px;
+    }
+
+    header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    header p {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 16px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .section-number {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      min-width: 20px;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .section-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .fields {
+      display: grid;
+      gap: 18px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.2px;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 10px 13px;
+      outline: none;
+      transition: border-color 0.15s;
+      resize: none;
+      width: 100%;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: var(--border-focus);
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: #c0c0ba;
+    }
+
+    .field textarea {
+      min-height: 80px;
+      line-height: 1.55;
+    }
+
+    .two-col {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 520px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    /* Tag input */
+    .tag-input-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 8px 10px;
+      cursor: text;
+      min-height: 44px;
+      transition: border-color 0.15s;
+    }
+
+    .tag-input-wrapper:focus-within {
+      border-color: var(--border-focus);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 3px 8px 3px 10px;
+      border-radius: 5px;
+    }
+
+    .tag button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1;
+      padding: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .tag button:hover { color: var(--text); }
+
+    .tag-text-input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      min-width: 120px;
+      flex: 1;
+      padding: 2px 0;
+    }
+
+    .tag-text-input::placeholder { color: #c0c0ba; }
+
+    .tag-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Platform pills */
+    .platform-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .platform-pill {
+      display: none;
+    }
+
+    .platform-pill + label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.12s;
+      user-select: none;
+    }
+
+    .platform-pill + label:hover {
+      border-color: var(--border-focus);
+    }
+
+    .platform-pill:checked + label {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* Viral example rows */
+    .viral-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .viral-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .viral-row input[type="text"] {
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 10px 13px;
+      outline: none;
+      transition: border-color 0.15s;
+      flex: 1;
+    }
+
+    .viral-row input[type="text"]:focus { border-color: var(--border-focus); }
+
+    .viral-row input.views {
+      width: 110px;
+      flex: none;
+    }
+
+    .viral-row input::placeholder { color: #c0c0ba; }
+
+    .btn-icon {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: all 0.12s;
+      margin-top: 1px;
+    }
+
+    .btn-icon:hover { border-color: var(--border-focus); color: var(--text); }
+
+    .btn-add {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      background: none;
+      border: 1px dashed var(--border);
+      border-radius: 7px;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: all 0.12s;
+      margin-top: 4px;
+    }
+
+    .btn-add:hover { color: var(--text); border-color: var(--border-focus); }
+
+    .json-paste-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .json-status {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Footer CTA */
+    .footer-cta {
+      margin-top: 32px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-submit {
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .btn-submit:hover { opacity: 0.82; }
+
+    /* Output modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 640px;
+      width: 100%;
+      max-height: 80vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h2 { font-size: 15px; font-weight: 600; }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--muted);
+      line-height: 1;
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .modal-body pre {
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 12.5px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text);
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-copy {
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 9px 18px;
+      border-radius: 7px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: #fff;
+      transition: all 0.12s;
+    }
+
+    .btn-copy:hover { border-color: var(--border-focus); }
+
+    .btn-copy.copied {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <header>
+    <h1>Content Strategy Builder</h1>
+    <p>Fill in the details below to build a structured brief for content creation.</p>
+  </header>
+
+  <form id="strategyForm" novalidate>
+
+    <!-- Quick JSON Paste -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">00</span>
+        <div>
+          <div class="section-title">Quick Paste JSON</div>
+          <div class="section-desc">Paste structured JSON to auto-fill all fields instantly</div>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="field">
+          <label>Input JSON</label>
+          <textarea id="pasteJsonInput" placeholder='Paste JSON here. Supports form-shape or {"campaign_input": {...}} shape.'></textarea>
+        </div>
+        <div class="json-paste-actions">
+          <button type="button" class="btn-add" id="applyJsonBtn"><span>+</span> Apply JSON</button>
+          <span class="json-status" id="jsonApplyStatus"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. Product Info -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <div>
+          <div class="section-title">Product Info</div>
+          <div class="section-desc">What is being promoted</div>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="fields two-col">
+          <div class="field">
+            <label>Product Name</label>
+            <input type="text" id="productName" placeholder="e.g. AI Study Planner" />
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <input type="text" id="productCategory" placeholder="e.g. productivity app" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Short Description</label>
+          <textarea id="productDesc" placeholder="Briefly describe what the product does..."></textarea>
+        </div>
+        <div class="field">
+          <label>Key Benefits</label>
+          <div class="tag-input-wrapper" id="benefitsWrapper">
+            <input class="tag-text-input" id="benefitsInput" placeholder="Type a benefit, press Enter" />
+          </div>
+          <span class="tag-hint">Press Enter or comma to add</span>
+        </div>
+        <div class="field">
+          <label>Product Website</label>
+          <input type="url" id="productWebsite" placeholder="https://" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Target Audience -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <div>
+          <div class="section-title">Target Audience</div>
+          <div class="section-desc">Who the content is for</div>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="fields two-col">
+          <div class="field">
+            <label>Age Range</label>
+            <input type="text" id="ageRange" placeholder="e.g. 18–25" />
+          </div>
+          <div class="field">
+            <label>Lifestyle</label>
+            <input type="text" id="lifestyle" placeholder="e.g. college student" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Interests</label>
+          <div class="tag-input-wrapper" id="interestsWrapper">
+            <input class="tag-text-input" id="interestsInput" placeholder="Type an interest, press Enter" />
+          </div>
+          <span class="tag-hint">Press Enter or comma to add</span>
+        </div>
+        <div class="field">
+          <label>Pain Point</label>
+          <input type="text" id="painPoint" placeholder="e.g. procrastination" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Creator / Influencer Profile -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <div>
+          <div class="section-title">Creator / Influencer Profile</div>
+          <div class="section-desc">So strategies match the creator's style</div>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="fields two-col">
+          <div class="field">
+            <label>Follower Size</label>
+            <input type="text" id="followerSize" placeholder="e.g. 120k" />
+          </div>
+          <div class="field">
+            <label>Niche</label>
+            <input type="text" id="creatorNiche" placeholder="e.g. study content" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Content Style</label>
+          <input type="text" id="contentStyle" placeholder="e.g. storytelling, POV, tutorials..." />
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Platform -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <div>
+          <div class="section-title">Platform</div>
+          <div class="section-desc">Where the content will be posted</div>
+        </div>
+      </div>
+      <div class="platform-grid">
+        <input class="platform-pill" type="radio" name="platform" id="p-tiktok" value="TikTok" />
+        <label for="p-tiktok">TikTok</label>
+
+        <input class="platform-pill" type="radio" name="platform" id="p-instagram" value="Instagram Reels" />
+        <label for="p-instagram">Instagram Reels</label>
+
+        <input class="platform-pill" type="radio" name="platform" id="p-youtube" value="YouTube Shorts" />
+        <label for="p-youtube">YouTube Shorts</label>
+
+        <input class="platform-pill" type="radio" name="platform" id="p-twitter" value="X / Twitter" />
+        <label for="p-twitter">X / Twitter</label>
+
+        <input class="platform-pill" type="radio" name="platform" id="p-linkedin" value="LinkedIn" />
+        <label for="p-linkedin">LinkedIn</label>
+
+        <input class="platform-pill" type="radio" name="platform" id="p-other" value="Other" />
+        <label for="p-other">Other</label>
+      </div>
+      <div class="field" style="margin-top:14px;" id="platformOtherField" style="display:none;">
+        <input type="text" id="platformOther" placeholder="Specify platform..." />
+      </div>
+    </div>
+
+    <!-- 5. Global Trends -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <div>
+          <div class="section-title">Global Trends</div>
+          <div class="section-desc">General internet trends — from Google Trends, TikTok search</div>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="field">
+          <label>Trending Formats</label>
+          <div class="tag-input-wrapper" id="trendingFormatsWrapper">
+            <input class="tag-text-input" id="trendingFormatsInput" placeholder="e.g. POV storytelling, day in the life..." />
+          </div>
+          <span class="tag-hint">Press Enter or comma to add</span>
+        </div>
+        <div class="field">
+          <label>Trending Topics</label>
+          <div class="tag-input-wrapper" id="trendingTopicsWrapper">
+            <input class="tag-text-input" id="trendingTopicsInput" placeholder="e.g. AI tools, productivity hacks..." />
+          </div>
+          <span class="tag-hint">Press Enter or comma to add</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Niche Trends -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <div>
+          <div class="section-title">Niche Trends</div>
+          <div class="section-desc">Trends related to your product category — search TikTok for the niche</div>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="field">
+          <label>Niche Trends</label>
+          <div class="tag-input-wrapper" id="nicheTrendsWrapper">
+            <input class="tag-text-input" id="nicheTrendsInput" placeholder="e.g. study hack, exam prep, productivity routine..." />
+          </div>
+          <span class="tag-hint">Press Enter or comma to add</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Viral Examples -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <div>
+          <div class="section-title">Viral Examples</div>
+          <div class="section-desc">A few viral posts from the niche — from TikTok search, YouTube Shorts</div>
+        </div>
+      </div>
+      <div class="viral-list" id="viralList">
+        <div class="viral-row">
+          <input type="text" placeholder="e.g. POV you start studying 1 day before exam" />
+          <input type="text" class="views" placeholder="Views (opt.)" />
+          <button type="button" class="btn-icon viral-remove" title="Remove">×</button>
+        </div>
+      </div>
+      <button type="button" class="btn-add" id="addViral">
+        <span>+</span> Add example
+      </button>
+    </div>
+
+    <div class="footer-cta">
+      <button type="submit" class="btn-submit">Generate Brief →</button>
+    </div>
+
+  </form>
+
+</div>
+
+<!-- Output Modal -->
+<div class="modal-overlay" id="outputModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Swarm Strategy Output</h2>
+      <button class="modal-close" id="closeModal">×</button>
+    </div>
+    <div class="modal-body">
+      <pre id="outputYaml"></pre>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-copy" id="copyBtn">Copy Output</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Tag Input ──────────────────────────────────────────────────────────────
+  function initTagInput(wrapperId, inputId) {
+    const wrapper = document.getElementById(wrapperId);
+    const input = document.getElementById(inputId);
+    const tags = [];
+
+    wrapper.addEventListener('click', () => input.focus());
+
+    function renderTag(value) {
+      const v = value.trim();
+      if (!v || tags.includes(v)) return;
+      tags.push(v);
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.innerHTML = `<span>${v}</span><button type="button">×</button>`;
+      tag.querySelector('button').addEventListener('click', () => {
+        const idx = tags.indexOf(v);
+        if (idx > -1) tags.splice(idx, 1);
+        tag.remove();
+      });
+      wrapper.insertBefore(tag, input);
+    }
+
+    function addTag(value) {
+      const v = value.trim().replace(/,$/, '').trim();
+      renderTag(v);
+      input.value = '';
+    }
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); addTag(input.value); }
+      if (e.key === 'Backspace' && input.value === '' && tags.length) {
+        const last = wrapper.querySelectorAll('.tag');
+        if (last.length) {
+          const lastTag = last[last.length - 1];
+          const idx = tags.indexOf(lastTag.querySelector('span').textContent);
+          if (idx > -1) tags.splice(idx, 1);
+          lastTag.remove();
+        }
+      }
+    });
+
+    input.addEventListener('input', () => {
+      if (input.value.endsWith(',')) addTag(input.value);
+    });
+
+    function setTags(values) {
+      tags.splice(0, tags.length);
+      wrapper.querySelectorAll('.tag').forEach(el => el.remove());
+      (Array.isArray(values) ? values : []).forEach(value => renderTag(String(value).trim()));
+      input.value = '';
+    }
+
+    return {
+      getTags: () => [...tags],
+      setTags,
+    };
+  }
+
+  const tagInputs = {
+    benefits: initTagInput('benefitsWrapper', 'benefitsInput'),
+    interests: initTagInput('interestsWrapper', 'interestsInput'),
+    trendingFormats: initTagInput('trendingFormatsWrapper', 'trendingFormatsInput'),
+    trendingTopics: initTagInput('trendingTopicsWrapper', 'trendingTopicsInput'),
+    nicheTrends: initTagInput('nicheTrendsWrapper', 'nicheTrendsInput'),
+  };
+
+  // ── Platform "Other" field ─────────────────────────────────────────────────
+  document.querySelectorAll('input[name="platform"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      document.getElementById('platformOtherField').style.display =
+        radio.value === 'Other' && radio.checked ? 'block' : 'none';
+    });
+  });
+
+  // ── Viral Examples ─────────────────────────────────────────────────────────
+  function addViralRow(description = '', views = '') {
+    const list = document.getElementById('viralList');
+    const row = document.createElement('div');
+    row.className = 'viral-row';
+    row.innerHTML = `
+      <input type="text" placeholder="e.g. before vs after using a planner" />
+      <input type="text" class="views" placeholder="Views (opt.)" />
+      <button type="button" class="btn-icon viral-remove" title="Remove">×</button>`;
+    const inputs = row.querySelectorAll('input');
+    inputs[0].value = description;
+    inputs[1].value = views;
+    row.querySelector('.viral-remove').addEventListener('click', () => row.remove());
+    list.appendChild(row);
+  }
+
+  document.getElementById('addViral').addEventListener('click', () => {
+    addViralRow();
+  });
+
+  document.getElementById('viralList').addEventListener('click', (e) => {
+    if (e.target.classList.contains('viral-remove')) {
+      const rows = document.querySelectorAll('.viral-row');
+      if (rows.length > 1) e.target.closest('.viral-row').remove();
+    }
+  });
+
+  // ── Data Builders ────────────────────────────────────────────────────────
+  function v(id) { return document.getElementById(id).value.trim(); }
+  function setV(id, value) { document.getElementById(id).value = String(value ?? '').trim(); }
+
+  function setPlatform(platformValue) {
+    const platform = (platformValue || '').trim();
+    const radios = document.querySelectorAll('input[name="platform"]');
+    let matched = false;
+    radios.forEach((radio) => {
+      const isMatch = radio.value === platform;
+      radio.checked = isMatch;
+      if (isMatch) matched = true;
+    });
+    if (!matched && platform) {
+      document.getElementById('p-other').checked = true;
+      setV('platformOther', platform);
+      document.getElementById('platformOtherField').style.display = 'block';
+      return;
+    }
+    document.getElementById('platformOtherField').style.display = platform === 'Other' ? 'block' : 'none';
+  }
+
+  function applyStructuredFormData(data) {
+    setV('productName', data.product?.name || '');
+    setV('productCategory', data.product?.category || '');
+    setV('productDesc', data.product?.description || '');
+    setV('productWebsite', data.product?.website || '');
+    tagInputs.benefits.setTags(data.product?.benefits || []);
+
+    setV('ageRange', data.audience?.age || '');
+    setV('lifestyle', data.audience?.lifestyle || '');
+    setV('painPoint', data.audience?.pain_point || '');
+    tagInputs.interests.setTags(data.audience?.interests || []);
+
+    setV('followerSize', data.creator?.followers || '');
+    setV('creatorNiche', data.creator?.niche || '');
+    setV('contentStyle', data.creator?.style || '');
+
+    setPlatform(data.platform || '');
+    tagInputs.trendingFormats.setTags(data.global_trends?.formats || []);
+    tagInputs.trendingTopics.setTags(data.global_trends?.topics || []);
+    tagInputs.nicheTrends.setTags(data.niche_trends || []);
+
+    const list = document.getElementById('viralList');
+    list.innerHTML = '';
+    const examples = Array.isArray(data.viral_examples) ? data.viral_examples : [];
+    if (!examples.length) addViralRow();
+    examples.forEach(item => addViralRow(String(item), ''));
+  }
+
+  function convertCampaignInputToFormData(campaignInput) {
+    const globalTrends = Array.isArray(campaignInput.global_trends) ? campaignInput.global_trends : [];
+    return {
+      product: {
+        name: campaignInput.product_info || '',
+        category: '',
+        description: '',
+        benefits: [],
+        website: '',
+      },
+      audience: {
+        age: '',
+        lifestyle: campaignInput.target_audience || '',
+        interests: [],
+        pain_point: '',
+      },
+      creator: {
+        followers: '',
+        niche: campaignInput.creator_profile || '',
+        style: '',
+      },
+      platform: campaignInput.platform || '',
+      global_trends: {
+        formats: globalTrends,
+        topics: [],
+      },
+      niche_trends: Array.isArray(campaignInput.niche_trends) ? campaignInput.niche_trends : [],
+      viral_examples: Array.isArray(campaignInput.viral_examples) ? campaignInput.viral_examples : [],
+    };
+  }
+
+  function setJsonStatus(message) {
+    document.getElementById('jsonApplyStatus').textContent = message;
+  }
+
+  document.getElementById('applyJsonBtn').addEventListener('click', () => {
+    const raw = v('pasteJsonInput');
+    if (!raw) {
+      setJsonStatus('Paste JSON first.');
+      return;
+    }
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.campaign_input && typeof parsed.campaign_input === 'object') {
+        applyStructuredFormData(convertCampaignInputToFormData(parsed.campaign_input));
+      } else {
+        applyStructuredFormData(parsed);
+      }
+      setJsonStatus('JSON applied. You can generate now.');
+    } catch (error) {
+      setJsonStatus(`Invalid JSON: ${error.message || error}`);
+    }
+  });
+
+  function collectViralExamples() {
+    const viralRows = document.querySelectorAll('.viral-row');
+    const viralExamples = [];
+    viralRows.forEach(row => {
+      const inputs = row.querySelectorAll('input');
+      const desc = inputs[0].value.trim();
+      const views = inputs[1].value.trim();
+      if (desc) viralExamples.push(views ? `${desc} (${views} views)` : desc);
+    });
+    return viralExamples;
+  }
+
+  function buildSwarmPayload() {
+    const platformChecked = document.querySelector('input[name="platform"]:checked');
+    const platform = platformChecked
+      ? (platformChecked.value === 'Other' ? v('platformOther') || 'Other' : platformChecked.value)
+      : '';
+
+    const productInfoParts = [
+      v('productName'),
+      v('productCategory') ? `(${v('productCategory')})` : '',
+      v('productDesc'),
+      tagInputs.benefits.getTags().length ? `Benefits: ${tagInputs.benefits.getTags().join(', ')}` : '',
+      v('productWebsite') ? `Website: ${v('productWebsite')}` : '',
+    ].filter(Boolean);
+
+    const audienceParts = [
+      v('ageRange') ? `Age: ${v('ageRange')}` : '',
+      v('lifestyle') ? `Lifestyle: ${v('lifestyle')}` : '',
+      tagInputs.interests.getTags().length ? `Interests: ${tagInputs.interests.getTags().join(', ')}` : '',
+      v('painPoint') ? `Pain point: ${v('painPoint')}` : '',
+    ].filter(Boolean);
+
+    const creatorParts = [
+      v('followerSize') ? `Followers: ${v('followerSize')}` : '',
+      v('creatorNiche') ? `Niche: ${v('creatorNiche')}` : '',
+      v('contentStyle') ? `Style: ${v('contentStyle')}` : '',
+    ].filter(Boolean);
+
+    return {
+      campaign_input: {
+        product_info: productInfoParts.join(' | ') || 'Unknown product',
+        target_audience: audienceParts.join(' | ') || 'General short-form audience',
+        creator_profile: creatorParts.join(' | ') || 'Creator details not provided',
+        platform: platform || 'TikTok',
+        global_trends: [
+          ...tagInputs.trendingFormats.getTags(),
+          ...tagInputs.trendingTopics.getTags(),
+        ],
+        niche_trends: tagInputs.nicheTrends.getTags(),
+        viral_examples: collectViralExamples(),
+      },
+      max_rounds: 3,
+    };
+  }
+
+  function formatRunOutput(run) {
+    const finalOutput = run.final_output || {};
+    const concepts = finalOutput.content_concepts || [];
+    const hooks = finalOutput.hook_library || [];
+    const formats = finalOutput.recommended_formats || [];
+    const plan = finalOutput.posting_experiment_plan || [];
+    const lineage = finalOutput.lineage_summary || [];
+
+    const conceptText = concepts.length
+      ? concepts.map((idea, idx) => {
+          return [
+            `${idx + 1}. ${idea.title || 'Untitled concept'}`,
+            `   - Description: ${idea.description || ''}`,
+            `   - Hook: ${idea.hook || ''}`,
+            `   - Source: ${idea.source_agent || ''}`,
+          ].join('\n');
+        }).join('\n\n')
+      : 'No concepts generated.';
+
+    const lines = [
+      `Run ID: ${run.run_id || '-'}`,
+      `Rounds: ${run.round_number || 0}`,
+      '',
+      'STRATEGY SUMMARY',
+      finalOutput.strategy_summary || 'No summary generated.',
+      '',
+      'CONTENT CONCEPTS',
+      conceptText,
+      '',
+      'HOOK LIBRARY',
+      hooks.length ? hooks.map(h => `- ${h}`).join('\n') : '- None',
+      '',
+      'RECOMMENDED FORMATS',
+      formats.length ? formats.map(f => `- ${f}`).join('\n') : '- None',
+      '',
+      'POSTING / EXPERIMENT PLAN',
+      plan.length ? plan.map(step => `- ${step}`).join('\n') : '- None',
+      '',
+      'LINEAGE',
+      lineage.length ? lineage.map(item => `- ${item}`).join('\n') : '- None',
+    ];
+
+    return lines.join('\n');
+  }
+
+  // ── Form Submit ────────────────────────────────────────────────────────────
+  document.getElementById('strategyForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = document.querySelector('.btn-submit');
+    const previousText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Generating...';
+
+    try {
+      const payload = buildSwarmPayload();
+      const response = await fetch('/swarm/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Request failed (${response.status}): ${errorText}`);
+      }
+
+      const run = await response.json();
+      document.getElementById('outputYaml').textContent = formatRunOutput(run);
+      document.getElementById('outputModal').classList.add('open');
+    } catch (err) {
+      document.getElementById('outputYaml').textContent =
+        `Could not generate output.\n\n${err.message || err}`;
+      document.getElementById('outputModal').classList.add('open');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = previousText;
+    }
+  });
+
+  // ── Modal ──────────────────────────────────────────────────────────────────
+  document.getElementById('closeModal').addEventListener('click', () => {
+    document.getElementById('outputModal').classList.remove('open');
+  });
+
+  document.getElementById('outputModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('outputModal'))
+      document.getElementById('outputModal').classList.remove('open');
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    const text = document.getElementById('outputYaml').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy Output'; btn.classList.remove('copied'); }, 2000);
+    });
+  });
+</script>
+</body>
+</html>
