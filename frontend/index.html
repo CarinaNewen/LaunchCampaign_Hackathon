@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Strategy Builder</title>
+
+  <!-- Cytoscape graph deps -->
+  <script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+  <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
+  <script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/form.css" />
+  <link rel="stylesheet" href="styles/dashboard.css" />
+  <link rel="stylesheet" href="styles/cards.css" />
+</head>
+<body>
+
+<div class="page">
+
+  <header class="page-header">
+    <div>
+      <h1>Content Strategy Builder</h1>
+      <p>Fill in the details below to build a structured brief for content creation.</p>
+    </div>
+    <div class="brand-title">bbyLucy</div>
+  </header>
+
+  <form id="strategyForm" novalidate>
+
+    <!-- 00. Quick JSON Paste -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">00</span>
+        <div>
+          <div class="section-title">Quick Paste JSON</div>
+          <div class="section-desc">Paste structured JSON to auto-fill all fields instantly</div>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="field">
+          <label>Input JSON</label>
+          <textarea id="pasteJsonInput" placeholder='Paste JSON here. Supports form-shape or {"campaign_input": {...}} shape.'></textarea>
+        </div>
+        <div class="json-paste-actions">
+          <button type="button" class="btn-add" id="applyJsonBtn"><span>+</span> Apply JSON</button>
+          <span class="json-status" id="jsonApplyStatus"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 01. Product Info -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <div>
+          <div class="section-title">Product Info</div>
+          <div class="section-desc">What is being promoted</div>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="fields two-col">
+          <div class="field">
+            <label>Product Name</label>
+            <input type="text" id="productName" placeholder="e.g. AI Study Planner" />
+          </div>
+          <div class="field">
+            <label>Category</label>
+            <input type="text" id="productCategory" placeholder="e.g. productivity app" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Short Description</label>
+          <textarea id="productDesc" placeholder="Briefly describe what the product does…"></textarea>
+        </div>
+        <div class="field">
+          <label>Key Benefits</label>
+          <div class="tag-input-wrapper" id="benefitsWrapper">
+            <input class="tag-text-input" id="benefitsInput" placeholder="Type a benefit, press Enter" />
+          </div>
+          <span class="tag-hint">Press Enter or comma to add</span>
+        </div>
+        <div class="field">
+          <label>Product Website</label>
+          <input type="url" id="productWebsite" placeholder="https://" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 02. Target Audience -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <div>
+          <div class="section-title">Target Audience</div>
+          <div class="section-desc">Who the content is for</div>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="fields two-col">
+          <div class="field">
+            <label>Age Range</label>
+            <input type="text" id="ageRange" placeholder="e.g. 18–25" />
+          </div>
+          <div class="field">
+            <label>Lifestyle</label>
+            <input type="text" id="lifestyle" placeholder="e.g. college student" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Interests</label>
+          <div class="tag-input-wrapper" id="interestsWrapper">
+            <input class="tag-text-input" id="interestsInput" placeholder="Type an interest, press Enter" />
+          </div>
+          <span class="tag-hint">Press Enter or comma to add</span>
+        </div>
+        <div class="field">
+          <label>Pain Point</label>
+          <input type="text" id="painPoint" placeholder="e.g. procrastination" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 03. Creator / Influencer Profile -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <div>
+          <div class="section-title">Creator / Influencer Profile</div>
+          <div class="section-desc">So strategies match the creator's style</div>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="fields two-col">
+          <div class="field">
+            <label>Follower Size</label>
+            <input type="text" id="followerSize" placeholder="e.g. 120k" />
+          </div>
+          <div class="field">
+            <label>Niche</label>
+            <input type="text" id="creatorNiche" placeholder="e.g. study content" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Content Style</label>
+          <input type="text" id="contentStyle" placeholder="e.g. storytelling, POV, tutorials…" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 04. Platform -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <div>
+          <div class="section-title">Platform</div>
+          <div class="section-desc">Where the content will be posted</div>
+        </div>
+      </div>
+      <div class="platform-grid">
+        <input class="platform-pill" type="radio" name="platform" id="p-tiktok"    value="TikTok" />
+        <label for="p-tiktok">TikTok</label>
+
+        <input class="platform-pill" type="radio" name="platform" id="p-instagram" value="Instagram Reels" />
+        <label for="p-instagram">Instagram Reels</label>
+
+        <input class="platform-pill" type="radio" name="platform" id="p-youtube"   value="YouTube Shorts" />
+        <label for="p-youtube">YouTube Shorts</label>
+
+        <input class="platform-pill" type="radio" name="platform" id="p-twitter"   value="X / Twitter" />
+        <label for="p-twitter">X / Twitter</label>
+
+        <input class="platform-pill" type="radio" name="platform" id="p-linkedin"  value="LinkedIn" />
+        <label for="p-linkedin">LinkedIn</label>
+
+        <input class="platform-pill" type="radio" name="platform" id="p-other"     value="Other" />
+        <label for="p-other">Other</label>
+      </div>
+      <div class="field" style="margin-top:14px;" id="platformOtherField" style="display:none;">
+        <input type="text" id="platformOther" placeholder="Specify platform…" />
+      </div>
+    </div>
+
+    <!-- 05. Global Trends -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <div>
+          <div class="section-title">Global Trends</div>
+          <div class="section-desc">General internet trends — from Google Trends, TikTok search</div>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="field">
+          <label>Trending Formats</label>
+          <div class="tag-input-wrapper" id="trendingFormatsWrapper">
+            <input class="tag-text-input" id="trendingFormatsInput" placeholder="e.g. POV storytelling, day in the life…" />
+          </div>
+          <span class="tag-hint">Press Enter or comma to add</span>
+        </div>
+        <div class="field">
+          <label>Trending Topics</label>
+          <div class="tag-input-wrapper" id="trendingTopicsWrapper">
+            <input class="tag-text-input" id="trendingTopicsInput" placeholder="e.g. AI tools, productivity hacks…" />
+          </div>
+          <span class="tag-hint">Press Enter or comma to add</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 06. Niche Trends -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <div>
+          <div class="section-title">Niche Trends</div>
+          <div class="section-desc">Trends related to your product category — search TikTok for the niche</div>
+        </div>
+      </div>
+      <div class="fields">
+        <div class="field">
+          <label>Niche Trends</label>
+          <div class="tag-input-wrapper" id="nicheTrendsWrapper">
+            <input class="tag-text-input" id="nicheTrendsInput" placeholder="e.g. study hack, exam prep, productivity routine…" />
+          </div>
+          <span class="tag-hint">Press Enter or comma to add</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 07. Viral Examples -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-number">07</span>
+        <div>
+          <div class="section-title">Viral Examples</div>
+          <div class="section-desc">A few viral posts from the niche — from TikTok search, YouTube Shorts</div>
+        </div>
+      </div>
+      <div class="viral-list" id="viralList">
+        <div class="viral-row">
+          <input type="text" placeholder="e.g. POV you start studying 1 day before exam" />
+          <input type="text" class="views" placeholder="Views (opt.)" />
+          <button type="button" class="btn-icon viral-remove" title="Remove">×</button>
+        </div>
+      </div>
+      <button type="button" class="btn-add" id="addViral">
+        <span>+</span> Add example
+      </button>
+    </div>
+
+    <div class="footer-cta">
+      <button type="submit" class="btn-submit">Generate Brief →</button>
+    </div>
+
+  </form>
+
+</div>
+
+<!-- Output Modal -->
+<div class="modal-overlay" id="outputModal">
+  <div class="modal" id="outputModalBox">
+
+    <div class="modal-header">
+      <h2>Swarm Strategy Output</h2>
+      <button class="modal-close" id="closeModal">×</button>
+    </div>
+
+    <div class="modal-body" id="outputModalBody">
+
+      <div class="swarm-loading" id="outputLoading" style="display: none;">
+        <div class="swarm-loading-top">
+          <div class="swarm-loading-spinner" aria-hidden="true"></div>
+          <div class="swarm-loading-text">
+            <strong>Building strategy...</strong>
+            <span>Running swarm analysis and preparing your dashboard.</span>
+          </div>
+        </div>
+        <div class="swarm-agent-controls" id="swarmAgentControls">
+          <div class="swarm-agent-controls-label">Stop an agent</div>
+          <div class="swarm-agent-buttons">
+            <button class="agent-kill-btn agent-kill-random" id="killRandomBtn">Kill Random</button>
+            <button class="agent-kill-btn" data-agent="trend_scout">Trend Analysis</button>
+            <button class="agent-kill-btn" data-agent="audience_psychologist">Audience Strategy</button>
+            <button class="agent-kill-btn" data-agent="creator_fit">Creator Alignment</button>
+            <button class="agent-kill-btn" data-agent="hook_smith">Hook Optimization</button>
+            <button class="agent-kill-btn" data-agent="format_composer">Format Planning</button>
+            <button class="agent-kill-btn" data-agent="critic_mutator">Quality Review</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Swarm dashboard: graph (top) | feed + metrics (bottom) -->
+      <div class="swarm-dashboard" id="swarmDashboard" style="display: none;">
+
+        <!-- Row 1: graph full width -->
+        <section class="swarm-card swarm-card-graph">
+          <h3 class="swarm-graph-title">
+            <span>Idea Graph (lineage)</span>
+            <button type="button" class="swarm-graph-toggle" id="swarmGraphToggle"
+                    aria-expanded="false" title="Expand graph">Expand</button>
+          </h3>
+          <div class="swarm-graph-wrap">
+            <div id="swarmGraph"></div>
+            <div class="swarm-graph-hint">Nodes = ideas (color = agent) · Start → End = lineage</div>
+          </div>
+        </section>
+
+        <!-- Row 2: feed left, metrics right -->
+        <div class="swarm-bottom-row">
+
+          <section class="swarm-card swarm-card-feed">
+            <h3>Swarm Activity Feed</h3>
+            <div class="swarm-feed-wrap">
+              <ul class="swarm-feed" id="swarmFeed"></ul>
+            </div>
+          </section>
+
+          <section class="swarm-card swarm-card-metrics">
+            <h3>State of the Mind metrics</h3>
+            <div class="swarm-metrics">
+              <div class="swarm-metric-row">
+                <span>Coverage</span>
+                <strong id="metricCoverage">0%</strong>
+              </div>
+              <div class="swarm-metric-row">
+                <span>Consensus</span>
+                <strong id="metricConsensus">100%</strong>
+              </div>
+              <div class="swarm-metric-row">
+                <span>Contradictions</span>
+                <strong id="metricContradictions">0</strong>
+              </div>
+              <div class="swarm-metric-row">
+                <span>Events/min</span>
+                <strong id="metricEventsPerMin">0</strong>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+      </div>
+
+      <!-- Fallback for errors -->
+      <pre id="outputYamlFallback" style="display: none;"></pre>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-copy" id="copyBtn">Copy</button>
+      <button class="btn-generate-video-modal" id="generateVideoModalBtn" disabled title="Coming soon">Generate Video</button>
+      <button class="btn-show-strategy" id="showStrategyBtn" disabled>Show Strategy →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Strategy Overlay -->
+<div class="strategy-overlay" id="strategyOverlay">
+  <div class="strategy-page">
+
+    <div class="strategy-topbar">
+      <div class="strategy-topbar-left">
+        <h2>Content Strategy</h2>
+        <div class="strategy-meta" id="strategyMeta"></div>
+      </div>
+      <div class="strategy-topbar-right">
+        <button class="btn-generate-video" id="generateVideoBtn" disabled title="Coming soon">Generate Video</button>
+        <button class="btn-copy-strategy" id="copyStrategyBtn">Copy</button>
+        <button class="strategy-close" id="closeStrategy">×</button>
+      </div>
+    </div>
+
+    <div class="strategy-content" id="strategyContent"></div>
+
+  </div>
+</div>
+
+<!-- JS modules (order matters: form → feed → graph → output-cards → api) -->
+<script src="js/form.js"></script>
+<script src="js/feed.js"></script>
+<script src="js/graph.js"></script>
+<script src="js/output-cards.js"></script>
+<script src="js/api.js"></script>
+
+</body>
+</html>

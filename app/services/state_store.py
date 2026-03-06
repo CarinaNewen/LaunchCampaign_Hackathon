@@ -23,5 +23,9 @@ class StateStore(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def update_agent_status(self, run_id: str, agent_name: str, status: AgentStatus) -> None:
+    def update_agent_status(self, run_id: str, agent_name: str, status: AgentStatus) -> None:  # noqa: E501
+        raise NotImplementedError
+
+    @abstractmethod
+    def kill_agent(self, run_id: str, agent_name: str) -> None:
         raise NotImplementedError

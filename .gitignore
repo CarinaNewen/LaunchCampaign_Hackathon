@@ -1,3 +1,5 @@
 venv/
-venv/
 swarm/
+.env
+__pycache__/
+*.pyc

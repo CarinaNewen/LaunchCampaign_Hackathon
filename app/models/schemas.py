@@ -82,10 +82,15 @@ class RunState(BaseModel):
     ideas: list[Idea] = Field(default_factory=list)
     event_history: list[SwarmEvent] = Field(default_factory=list)
     agent_statuses: dict[str, AgentStatus] = Field(default_factory=dict)
+    killed_agents: list[str] = Field(default_factory=list)
     round_number: int = 0
     scores: dict[str, float] = Field(default_factory=dict)
     confidence: dict[str, float] = Field(default_factory=dict)
     lineage: dict[str, list[str]] = Field(default_factory=dict)
+    # peer_votes: all score votes cast by any agent for each idea; final score = mean
+    peer_votes: dict[str, list[float]] = Field(default_factory=dict)
+    # agent_fail_counts: tracks consecutive failures; at 2 the agent is auto-killed
+    agent_fail_counts: dict[str, int] = Field(default_factory=dict)
     final_output: FinalOutput | None = None
     created_at: datetime = Field(default_factory=utc_now)
     updated_at: datetime = Field(default_factory=utc_now)
