@@ -4,6 +4,63 @@
 
 ---
 
+## Architecture
+
+```
+                    ┌─────────────────────────────────────────────────────────────────┐
+                    │                         FastAPI (main.py)                         │
+                    │  /health  │  /  (landing)  │  /*  (static)  │  CORS middleware   │
+                    └─────────────────────────────────────────────────────────────────┘
+                                                │
+                    ┌───────────────────────────▼───────────────────────────┐
+                    │              API Layer (api/routes.py)                 │
+                    │  prefix: /swarm                                         │
+                    │  POST /start   POST /run   POST /run/{id}   GET /run/{id}  │
+                    │  POST /demo   POST .../kill/{agent}   GET/POST /llm/*   │
+                    └───────────────────────────┬───────────────────────────┘
+                                                │
+        ┌───────────────────────────────────────┼───────────────────────────────────────┐
+        │                                       ▼                                       │
+        │  ┌─────────────────────────────────────────────────────────────────────────┐ │
+        │  │                     SwarmEngine (services/swarm_engine.py)               │ │
+        │  │  SharedStateManager ──► load/save RunState, events, agent statuses       │ │
+        │  │  start_run() → run_rounds() → priority-based agent scheduling → final    │ │
+        │  └───────┬─────────────────────────────────────────────────┬───────────────┘ │
+        │          │                                                 │                 │
+        │          ▼                                                 ▼                 │
+        │  ┌───────────────────┐                          ┌──────────────────────────┐ │
+        │  │   StateStore      │                          │   LLMService             │ │
+        │  │   (abstract)      │                          │   (services/llm.py)      │ │
+        │  └─────────┬─────────┘                          │   Gemini / Ollama        │ │
+        │            │                                    └────────────┬─────────────┘ │
+        │            │  InMemoryStore (memory_store.py)                │               │
+        │            │  dict + JSON snapshots to disk                  │               │
+        │            │  (RedisStore pluggable later)                   │               │
+        │            │                                                 │               │
+        │            └─────────────────────┬───────────────────────────┘               │
+        │                                  │                                           │
+        │                                  ▼                                           │
+        │  ┌─────────────────────────────────────────────────────────────────────────┐ │
+        │  │                    Swarm Agents (agents/*.py)                            │ │
+        │  │  BaseSwarmAgent: act(), can_act(), priority()                            │ │
+        │  │  ┌──────────────┬─────────────────────┬──────────────┬─────────────────┐ │ │
+        │  │  │ TrendScout   │ AudiencePsychologist│ CreatorFit   │ HookSmith       │ │ │
+        │  │  ├──────────────┼─────────────────────┼──────────────┼─────────────────┤ │ │
+        │  │  │ FormatComposer                     │ CriticMutator │                 │ │ │
+        │  │  └──────────────┴─────────────────────┴──────────────┴─────────────────┘ │ │
+        │  │  Each agent reads RunState (ideas, scores, lineage), calls LLM, returns   │ │
+        │  │  AgentActionResult (new_ideas, updated_scores, lineage_updates, events)   │ │
+        │  └─────────────────────────────────────────────────────────────────────────┘ │
+        │                                                                               │
+        │  ┌─────────────────────────────────────────────────────────────────────────┐ │
+        │  │  models/schemas.py   CampaignInput, RunState, SwarmEvent, FinalOutput    │ │
+        │  │  core/config.py      Settings (Gemini, Ollama, app name/version)        │ │
+        │  └─────────────────────────────────────────────────────────────────────────┘ │
+        └───────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## How do we automatically analyze the best strategies with swarm agents?
 
 Automation streamlines processes — apply this knowledge to generate launch campaign ideas.
