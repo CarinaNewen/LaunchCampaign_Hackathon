@@ -375,6 +375,17 @@
       flex-direction: column;
     }
 
+    .modal.has-dashboard {
+      max-width: 98vw;
+      width: 1400px;
+      max-height: 94vh;
+    }
+
+    .modal.has-dashboard.graph-expanded {
+      width: min(1600px, 99vw);
+      max-height: 97vh;
+    }
+
     .modal-header {
       display: flex;
       align-items: center;
@@ -399,6 +410,8 @@
       overflow-y: auto;
     }
 
+    .modal-body.pre-only { max-width: 640px; }
+
     .modal-body pre {
       font-family: "SF Mono", "Fira Code", monospace;
       font-size: 12.5px;
@@ -406,6 +419,182 @@
       white-space: pre-wrap;
       word-break: break-word;
       color: var(--text);
+    }
+
+    /* Swarm dashboard (graph + feed) - dark panel like swarm.html */
+    .swarm-dashboard {
+      --swarm-bg: #0b0f14;
+      --swarm-panel: #111826;
+      --swarm-line: #223044;
+      --swarm-text: #e6edf6;
+      --swarm-muted: #9fb0c3;
+      --swarm-good: #22c55e;
+      --swarm-warn: #f59e0b;
+      --swarm-accent: #60a5fa;
+      display: grid;
+      grid-template-columns: 280px 1fr 320px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .swarm-dashboard.graph-expanded {
+      grid-template-columns: 240px minmax(0, 1.7fr) 280px;
+    }
+
+    @media (max-width: 900px) {
+      .swarm-dashboard { grid-template-columns: 1fr; }
+    }
+
+    .swarm-card {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid var(--swarm-line);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .swarm-card h3 {
+      margin: 0;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--swarm-muted);
+      border-bottom: 1px solid var(--swarm-line);
+      font-weight: 600;
+    }
+
+    .swarm-graph-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .swarm-graph-toggle {
+      font: inherit;
+      color: var(--swarm-text);
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--swarm-line);
+      border-radius: 999px;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .swarm-graph-toggle:hover {
+      background: rgba(255,255,255,.12);
+      border-color: rgba(159,176,195,.65);
+    }
+
+    .swarm-feed-wrap {
+      overflow: auto;
+      max-height: 600px;
+      background: var(--swarm-panel);
+    }
+
+    .swarm-feed {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .swarm-feed li {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(34,48,68,.6);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 12px;
+    }
+
+    .swarm-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+
+    .swarm-dot.propose { background: var(--swarm-accent); box-shadow: 0 0 0 2px rgba(96,165,250,.2); }
+    .swarm-dot.mutate { background: var(--swarm-good); box-shadow: 0 0 0 2px rgba(34,197,94,.2); }
+    .swarm-dot.merge { background: #a78bfa; box-shadow: 0 0 0 2px rgba(167,139,250,.2); }
+    .swarm-dot.critique { background: var(--swarm-warn); box-shadow: 0 0 0 2px rgba(245,158,11,.2); }
+    .swarm-dot.score, .swarm-dot.finalize { background: var(--swarm-muted); }
+
+    .swarm-feed .meta {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .swarm-pill {
+      font-size: 10px;
+      border: 1px solid var(--swarm-line);
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      color: var(--swarm-muted);
+      font-family: ui-monospace, monospace;
+    }
+
+    .swarm-feed .msg {
+      color: var(--swarm-text);
+      line-height: 1.35;
+    }
+
+    .swarm-feed li.swarm-feed-item:not(.revealed) {
+      display: none;
+    }
+
+    .swarm-graph-wrap {
+      position: relative;
+      height: 600px;
+      min-height: 500px;
+      background: radial-gradient(circle at 30% 30%, rgba(96,165,250,.06), transparent 50%),
+                  rgba(0,0,0,.2);
+      border-radius: 0 0 12px 12px;
+    }
+
+    .swarm-graph-wrap.expanded {
+      height: min(82vh, 1000px);
+      min-height: 700px;
+    }
+
+    .swarm-graph-wrap canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 0 0 12px 12px;
+      min-height: 380px;
+    }
+
+    .swarm-graph-hint {
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      font-size: 11px;
+      color: var(--swarm-muted);
+      background: rgba(0,0,0,.4);
+      border: 1px solid var(--swarm-line);
+      border-radius: 999px;
+      padding: 4px 8px;
+    }
+
+    .swarm-output-wrap {
+      overflow: auto;
+      max-height: 600px;
+      background: var(--swarm-panel);
+    }
+
+    .swarm-output-wrap pre {
+      margin: 0;
+      padding: 10px 12px;
+      font-size: 11px;
+      line-height: 1.5;
+      color: var(--swarm-text);
+      background: transparent;
     }
 
     .modal-footer {
@@ -679,13 +868,37 @@
 
 <!-- Output Modal -->
 <div class="modal-overlay" id="outputModal">
-  <div class="modal">
+  <div class="modal" id="outputModalBox">
     <div class="modal-header">
       <h2>Swarm Strategy Output</h2>
       <button class="modal-close" id="closeModal">×</button>
     </div>
-    <div class="modal-body">
-      <pre id="outputYaml"></pre>
+    <div class="modal-body" id="outputModalBody">
+      <div class="swarm-dashboard" id="swarmDashboard" style="display: none;">
+        <section class="swarm-card">
+          <h3>Swarm Activity Feed</h3>
+          <div class="swarm-feed-wrap">
+            <ul class="swarm-feed" id="swarmFeed"></ul>
+          </div>
+        </section>
+        <section class="swarm-card">
+          <h3 class="swarm-graph-title">
+            <span>Idea Graph (lineage)</span>
+            <button type="button" class="swarm-graph-toggle" id="swarmGraphToggle" aria-expanded="false" title="Expand graph">Expand</button>
+          </h3>
+          <div class="swarm-graph-wrap">
+            <canvas id="swarmGraph"></canvas>
+            <div class="swarm-graph-hint">Nodes = ideas (color = agent) • Start → End = lineage</div>
+          </div>
+        </section>
+        <section class="swarm-card">
+          <h3>Final Output</h3>
+          <div class="swarm-output-wrap">
+            <pre id="outputYaml"></pre>
+          </div>
+        </section>
+      </div>
+      <pre id="outputYamlFallback" style="display: none;"></pre>
     </div>
     <div class="modal-footer">
       <button class="btn-copy" id="copyBtn">Copy Output</button>
@@ -956,6 +1169,383 @@
     };
   }
 
+  let lastRun = null;
+  let swarmGraphCancelled = false;
+  let swarmGraphController = null;
+
+  function setSwarmGraphExpanded(expanded) {
+    const wrap = document.querySelector('.swarm-graph-wrap');
+    const toggleBtn = document.getElementById('swarmGraphToggle');
+    const modalBox = document.getElementById('outputModalBox');
+    const dashboard = document.getElementById('swarmDashboard');
+    if (!wrap || !toggleBtn || !modalBox || !dashboard) return;
+
+    wrap.classList.toggle('expanded', expanded);
+    modalBox.classList.toggle('graph-expanded', expanded);
+    dashboard.classList.toggle('graph-expanded', expanded);
+    toggleBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    toggleBtn.textContent = expanded ? 'Collapse' : 'Expand';
+    toggleBtn.title = expanded ? 'Collapse graph' : 'Expand graph';
+
+    requestAnimationFrame(() => {
+      if (swarmGraphController && typeof swarmGraphController.redraw === 'function') {
+        swarmGraphController.redraw();
+      }
+    });
+  }
+
+  function stopSwarmGraph() {
+    swarmGraphCancelled = true;
+    if (swarmGraphController && typeof swarmGraphController.destroy === 'function') {
+      swarmGraphController.destroy();
+    }
+    swarmGraphController = null;
+  }
+
+  function renderSwarmFeed(run) {
+    const feedEl = document.getElementById('swarmFeed');
+    feedEl.innerHTML = '';
+    const events = run.event_history || [];
+    events.forEach((ev) => {
+      const li = document.createElement('li');
+      li.className = 'swarm-feed-item';
+      const dot = document.createElement('div');
+      dot.className = 'swarm-dot ' + (ev.action_type || 'critique');
+      li.appendChild(dot);
+      const box = document.createElement('div');
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      const agentPill = document.createElement('span');
+      agentPill.className = 'swarm-pill';
+      agentPill.textContent = ev.agent_name || 'agent';
+      meta.appendChild(agentPill);
+      const typePill = document.createElement('span');
+      typePill.className = 'swarm-pill';
+      typePill.textContent = ev.action_type || '';
+      meta.appendChild(typePill);
+      if (ev.round_number) {
+        const r = document.createElement('span');
+        r.className = 'swarm-pill';
+        r.textContent = 'R' + ev.round_number;
+        meta.appendChild(r);
+      }
+      const msg = document.createElement('div');
+      msg.className = 'msg';
+      msg.textContent = ev.message || '';
+      box.appendChild(meta);
+      box.appendChild(msg);
+      li.appendChild(box);
+      feedEl.appendChild(li);
+    });
+  }
+
+  function updateFeedReveal(revealIndex) {
+    const feedEl = document.getElementById('swarmFeed');
+    if (!feedEl) return;
+    feedEl.querySelectorAll('.swarm-feed-item').forEach((li, i) => {
+      li.classList.toggle('revealed', i <= revealIndex);
+    });
+  }
+
+  function runSwarmGraph(run, opts) {
+    stopSwarmGraph();
+    const onReveal = (opts && opts.onReveal) || (function() {});
+    const canvas = document.getElementById('swarmGraph');
+    const wrap = canvas.closest('.swarm-graph-wrap');
+    const ideas = run.ideas || [];
+    const lineage = run.lineage || {};
+    const events = run.event_history || [];
+
+    if (!ideas.length) return;
+
+    const ideaMap = new Map(ideas.map((i) => [i.idea_id, i]));
+    const nodes = ideas.map((idea) => ({
+      id: idea.idea_id,
+      label: (idea.title || idea.idea_id).slice(0, 42),
+      source_agent: idea.source_agent || '',
+      round: idea.round_created || 0,
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      visible: false,
+    }));
+
+    const nodeById = new Map(nodes.map((n) => [n.id, n]));
+    const edges = [];
+    Object.entries(lineage).forEach(([child, parents]) => {
+      (parents || []).forEach((pid) => {
+        if (nodeById.has(child) && nodeById.has(pid)) edges.push({ a: pid, b: child });
+      });
+    });
+
+    const children = new Set(Object.keys(lineage || {}));
+    const rootNode = nodes.find((n) => !children.has(n.id));
+    const rootId = rootNode ? rootNode.id : null;
+    const endIds = new Set(
+      (run.final_output && run.final_output.content_concepts || []).slice(0, 3).map((c) => c.idea_id)
+    );
+
+    const eventOrder = [];
+    events.forEach((ev, idx) => {
+      (ev.idea_ids || []).forEach((id) => eventOrder.push({ eventIndex: idx, ideaId: id }));
+    });
+    const revealByEvent = [];
+    for (let i = 0; i <= events.length; i++) {
+      revealByEvent.push(new Set(eventOrder.filter((o) => o.eventIndex < i).map((o) => o.ideaId)));
+    }
+
+    const LAYOUT_W = 900;
+    const LAYOUT_H = 620;
+    const PAD = 75;
+    const MAX_VEL = 8;
+
+    let revealIndex = 0;
+    const ctx = canvas.getContext('2d');
+    let rafId = null;
+    let animStart = 0;
+    const revealInterval = 520;
+
+    const RESOLUTION_SCALE = 2;
+    function fitCanvas() {
+      const rect = wrap.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(rect.width * dpr * RESOLUTION_SCALE);
+      canvas.height = Math.floor(rect.height * dpr * RESOLUTION_SCALE);
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+    }
+
+    function setVisible(upToEventIndex) {
+      const visible = revealByEvent[Math.min(upToEventIndex, revealByEvent.length - 1)];
+      nodes.forEach((n) => { n.visible = visible.has(n.id); });
+      const visibleNodes = nodes.filter((n) => n.visible);
+      if (visibleNodes.length) {
+        const cols = Math.max(1, Math.min(4, Math.ceil(Math.sqrt(visibleNodes.length))));
+        const rows = Math.ceil(visibleNodes.length / cols);
+        const stepX = (LAYOUT_W - 2 * PAD) / Math.max(cols, 1);
+        const stepY = (LAYOUT_H - 2 * PAD) / Math.max(rows, 1);
+        visibleNodes.forEach((n, i) => {
+          const col = i % cols;
+          const row = Math.floor(i / cols);
+          n.x = PAD + stepX * (col + 0.5);
+          n.y = PAD + stepY * (row + 0.5);
+          n.vx = 0;
+          n.vy = 0;
+        });
+      }
+    }
+
+    function physicsStep() {
+      const visible = nodes.filter((n) => n.visible);
+      const damping = 0.94;
+      for (const n of visible) {
+        n.vx *= damping;
+        n.vy *= damping;
+        const v = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
+        if (v > MAX_VEL) {
+          n.vx = (n.vx / v) * MAX_VEL;
+          n.vy = (n.vy / v) * MAX_VEL;
+        }
+      }
+      const repulsion = 95;
+      for (let i = 0; i < visible.length; i++) {
+        for (let j = i + 1; j < visible.length; j++) {
+          const a = visible[i], b = visible[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy + 1;
+          const f = repulsion / d2;
+          a.vx += (dx / Math.sqrt(d2)) * f;
+          a.vy += (dy / Math.sqrt(d2)) * f;
+          b.vx -= (dx / Math.sqrt(d2)) * f;
+          b.vy -= (dy / Math.sqrt(d2)) * f;
+        }
+      }
+      const visibleIds = new Set(visible.map((n) => n.id));
+      const springRest = 280;
+      const springK = 0.005;
+      for (const e of edges) {
+        if (!visibleIds.has(e.a) || !visibleIds.has(e.b)) continue;
+        const a = nodeById.get(e.a), b = nodeById.get(e.b);
+        if (!a || !b) continue;
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) + 1;
+        const f = (dist - springRest) * springK;
+        a.vx += dx * f;
+        a.vy += dy * f;
+        b.vx -= dx * f;
+        b.vy -= dy * f;
+      }
+      for (const n of visible) {
+        n.x += n.vx;
+        n.y += n.vy;
+        n.x = Math.max(PAD, Math.min(LAYOUT_W - PAD, n.x));
+        n.y = Math.max(PAD, Math.min(LAYOUT_H - PAD, n.y));
+      }
+    }
+
+    function draw() {
+      fitCanvas();
+      const rect = wrap.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const cw = canvas.width;
+      const ch = canvas.height;
+
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.imageSmoothingEnabled = true;
+      if (ctx.imageSmoothingQuality !== undefined) ctx.imageSmoothingQuality = 'high';
+
+      const visible = nodes.filter((n) => n.visible);
+      if (visible.length === 0) return;
+
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      for (const n of visible) {
+        minX = Math.min(minX, n.x);
+        maxX = Math.max(maxX, n.x);
+        minY = Math.min(minY, n.y);
+        maxY = Math.max(maxY, n.y);
+      }
+      const pad = 60;
+      const rangeX = Math.max(120, maxX - minX + 2 * pad);
+      const rangeY = Math.max(120, maxY - minY + 2 * pad);
+      const scale = Math.min(cw / rangeX, ch / rangeY);
+      const offsetX = (cw - rangeX * scale) / 2;
+      const offsetY = (ch - rangeY * scale) / 2;
+
+      ctx.save();
+      ctx.translate(offsetX, offsetY);
+      ctx.scale(scale, scale);
+      ctx.translate(-(minX - pad), -(minY - pad));
+
+      const lineW = Math.max(0.5, 1.5 / scale);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      const visibleIds = new Set(visible.map((n) => n.id));
+      for (const e of edges) {
+        if (!visibleIds.has(e.a) || !visibleIds.has(e.b)) continue;
+        const a = nodeById.get(e.a), b = nodeById.get(e.b);
+        if (!a || !b) continue;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.strokeStyle = 'rgba(96,165,250,0.45)';
+        ctx.lineWidth = lineW;
+        ctx.stroke();
+      }
+
+      const AGENT_COLORS = {
+        trend_scout:        { fill: 'rgba(96,165,250,0.9)',  glow: 'rgba(96,165,250,0.2)' },
+        audience_psychologist: { fill: 'rgba(34,197,94,0.9)',   glow: 'rgba(34,197,94,0.2)' },
+        creator_fit:        { fill: 'rgba(20,184,166,0.9)',  glow: 'rgba(20,184,166,0.2)' },
+        hook_smith:         { fill: 'rgba(249,115,22,0.9)',  glow: 'rgba(249,115,22,0.2)' },
+        format_composer:    { fill: 'rgba(168,85,247,0.9)',  glow: 'rgba(168,85,247,0.2)' },
+        critic_mutator:     { fill: 'rgba(234,179,8,0.9)',   glow: 'rgba(234,179,8,0.2)' },
+      };
+      const defaultColor = { fill: 'rgba(159,176,195,0.85)', glow: 'rgba(159,176,195,0.15)' };
+
+      const r = Math.max(3, 10 / scale);
+      for (const n of nodes) {
+        if (!n.visible) continue;
+        const color = AGENT_COLORS[n.source_agent] || defaultColor;
+        const isStart = n.id === rootId;
+        const isEnd = endIds.has(n.id);
+        if (isStart) {
+          ctx.strokeStyle = 'rgba(34,197,94,0.95)';
+          ctx.lineWidth = Math.max(1, 2.5 / scale);
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r + 4, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        if (isEnd) {
+          ctx.strokeStyle = 'rgba(234,179,8,0.95)';
+          ctx.lineWidth = Math.max(1, 2.5 / scale);
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, r + 4, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r * 1.4, 0, Math.PI * 2);
+        ctx.fillStyle = color.glow;
+        ctx.fill();
+        ctx.shadowColor = color.fill;
+        ctx.shadowBlur = r * 0.8;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = color.fill;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        const fontSize = Math.max(8, 11 / scale);
+        ctx.font = `${fontSize}px ui-sans-serif, sans-serif`;
+        ctx.fillStyle = 'rgba(230,237,246,0.95)';
+        ctx.textBaseline = 'middle';
+        const text = n.label.length > 22 ? n.label.slice(0, 20) + '…' : n.label;
+        ctx.fillText(text, n.x + r + 5, n.y);
+        if (isStart) {
+          ctx.font = `${Math.max(7, 9 / scale)}px ui-sans-serif, sans-serif`;
+          ctx.fillStyle = 'rgba(34,197,94,0.98)';
+          ctx.textBaseline = 'bottom';
+          ctx.textAlign = 'center';
+          ctx.fillText('Start', n.x, n.y - r - 6);
+          ctx.textAlign = 'left';
+        }
+        if (isEnd) {
+          ctx.font = `${Math.max(7, 9 / scale)}px ui-sans-serif, sans-serif`;
+          ctx.fillStyle = 'rgba(234,179,8,0.98)';
+          ctx.textBaseline = 'top';
+          ctx.textAlign = 'center';
+          ctx.fillText('End', n.x, n.y + r + 6);
+          ctx.textAlign = 'left';
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function redraw() {
+      draw();
+    }
+
+    function handleResize() {
+      redraw();
+    }
+
+    function tick(t) {
+      if (swarmGraphCancelled) return;
+      if (!animStart) animStart = t;
+      const elapsed = t - animStart;
+      const nextReveal = Math.floor(elapsed / revealInterval) + 1;
+      if (nextReveal > revealIndex && revealIndex < revealByEvent.length) {
+        revealIndex = nextReveal;
+        setVisible(revealIndex);
+      }
+      physicsStep();
+      physicsStep();
+      draw();
+      onReveal(revealIndex);
+      if (revealIndex < revealByEvent.length - 1 || elapsed < 8000) {
+        rafId = requestAnimationFrame(tick);
+      }
+    }
+
+    swarmGraphCancelled = false;
+    setVisible(0);
+    fitCanvas();
+    draw();
+    window.addEventListener('resize', handleResize);
+    swarmGraphController = {
+      redraw,
+      destroy() {
+        if (rafId) {
+          cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+        window.removeEventListener('resize', handleResize);
+      },
+    };
+    rafId = requestAnimationFrame(tick);
+  }
+
   function formatRunOutput(run) {
     const finalOutput = run.final_output || {};
     const concepts = finalOutput.content_concepts || [];
@@ -1011,7 +1601,21 @@
 
     try {
       const payload = buildSwarmPayload();
-      const response = await fetch('/swarm/run', {
+      // If you serve this HTML from a different port (e.g. Live Server),
+      // default API calls to the FastAPI server on :8000.
+      const configuredBase = window.localStorage.getItem('SWARM_API_BASE');
+      const pageOrigin = (window.location && window.location.origin && window.location.origin !== 'null')
+        ? window.location.origin
+        : '';
+      const apiBase = configuredBase
+        ? configuredBase
+        : (window.location && window.location.port === '8000' && pageOrigin)
+          ? pageOrigin
+          : 'http://127.0.0.1:8000';
+
+      const runUrl = new URL('/swarm/run', apiBase).toString();
+
+      const response = await fetch(runUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -1023,11 +1627,51 @@
       }
 
       const run = await response.json();
-      document.getElementById('outputYaml').textContent = formatRunOutput(run);
+      lastRun = run;
+
+      const dashboard = document.getElementById('swarmDashboard');
+      const fallback = document.getElementById('outputYamlFallback');
+      const body = document.getElementById('outputModalBody');
+      const modalBox = document.getElementById('outputModalBox');
+
+      dashboard.style.display = '';
+      fallback.style.display = 'none';
+      body.classList.remove('pre-only');
+      modalBox.classList.add('has-dashboard');
+      setSwarmGraphExpanded(false);
+
+      renderSwarmFeed(run);
+      const outputYamlEl = document.getElementById('outputYaml');
+      const eventCount = (run.event_history || []).length;
+      if (eventCount === 0) {
+        outputYamlEl.textContent = formatRunOutput(run);
+      } else {
+        outputYamlEl.textContent = 'Building strategy… (replay in sync with graph)';
+      }
+      runSwarmGraph(run, {
+        onReveal: function (revealIndex) {
+          updateFeedReveal(revealIndex);
+          if (eventCount > 0 && revealIndex >= eventCount - 1) {
+            outputYamlEl.textContent = formatRunOutput(run);
+          }
+        },
+      });
+
       document.getElementById('outputModal').classList.add('open');
     } catch (err) {
-      document.getElementById('outputYaml').textContent =
-        `Could not generate output.\n\n${err.message || err}`;
+      lastRun = null;
+      const dashboard = document.getElementById('swarmDashboard');
+      const fallback = document.getElementById('outputYamlFallback');
+      const body = document.getElementById('outputModalBody');
+      const modalBox = document.getElementById('outputModalBox');
+
+      dashboard.style.display = 'none';
+      fallback.style.display = '';
+      fallback.textContent = `Could not generate output.\n\n${err.message || err}`;
+      body.classList.add('pre-only');
+      modalBox.classList.remove('has-dashboard');
+      setSwarmGraphExpanded(false);
+
       document.getElementById('outputModal').classList.add('open');
     } finally {
       submitBtn.disabled = false;
@@ -1035,18 +1679,32 @@
     }
   });
 
+  document.getElementById('swarmGraphToggle').addEventListener('click', () => {
+    const wrap = document.querySelector('.swarm-graph-wrap');
+    const isExpanded = !!(wrap && wrap.classList.contains('expanded'));
+    setSwarmGraphExpanded(!isExpanded);
+  });
+
   // ── Modal ──────────────────────────────────────────────────────────────────
   document.getElementById('closeModal').addEventListener('click', () => {
+    stopSwarmGraph();
+    setSwarmGraphExpanded(false);
     document.getElementById('outputModal').classList.remove('open');
   });
 
   document.getElementById('outputModal').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('outputModal'))
+    if (e.target === document.getElementById('outputModal')) {
+      stopSwarmGraph();
+      setSwarmGraphExpanded(false);
       document.getElementById('outputModal').classList.remove('open');
+    }
   });
 
   document.getElementById('copyBtn').addEventListener('click', () => {
-    const text = document.getElementById('outputYaml').textContent;
+    const text = lastRun
+      ? formatRunOutput(lastRun)
+      : (document.getElementById('outputYamlFallback').textContent ||
+         document.getElementById('outputYaml').textContent);
     navigator.clipboard.writeText(text).then(() => {
       const btn = document.getElementById('copyBtn');
       btn.textContent = 'Copied!';

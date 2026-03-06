@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 from dataclasses import dataclass
 
 from app.agents.audience_psychologist import AudiencePsychologistAgent
@@ -68,7 +69,11 @@ class SwarmEngine:
             run.round_number = round_index
             self.state.save(run)
 
-            for agent in self.agents:
+            # Flat swarm: no manager/coordinator; agents discuss in random order each round.
+            agents_this_round = list(self.agents)
+            random.shuffle(agents_this_round)
+
+            for agent in agents_this_round:
                 try:
                     self.state.set_agent_status(run_id, agent.name, AgentStatus.running)
                     run = self.state.load(run_id)
@@ -133,9 +138,9 @@ class SwarmEngine:
         formats = list(dict.fromkeys(formats))
 
         strategy_summary = (
-            f"Swarm converged after {run.round_number} rounds on {len(top_ideas)} high-potential concepts "
-            f"for {run.campaign_input.platform}, combining trend velocity, audience tension, creator fit, "
-            "and hook-first delivery."
+            f"Agents discussed in peer order (no manager) and converged after {run.round_number} rounds "
+            f"on {len(top_ideas)} high-potential concepts for {run.campaign_input.platform}, "
+            "combining trend velocity, audience tension, creator fit, and hook-first delivery."
         )
         lineage_summary = [
             f"{idea.idea_id} <- {', '.join(run.lineage.get(idea.idea_id, [])) or 'root'}" for idea in top_ideas
