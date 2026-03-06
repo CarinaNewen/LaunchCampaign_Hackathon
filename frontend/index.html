@@ -268,6 +268,19 @@
       <button class="modal-close" id="closeModal">×</button>
     </div>
 
+    <div class="swarm-agent-controls is-hidden" id="swarmAgentControls">
+      <div class="swarm-agent-controls-label">Stop an agent</div>
+      <div class="swarm-agent-buttons">
+        <button class="agent-kill-btn agent-kill-random" id="killRandomBtn">Kill Random</button>
+        <button class="agent-kill-btn" data-agent="trend_scout">Trend Analysis</button>
+        <button class="agent-kill-btn" data-agent="audience_psychologist">Audience Strategy</button>
+        <button class="agent-kill-btn" data-agent="creator_fit">Creator Alignment</button>
+        <button class="agent-kill-btn" data-agent="hook_smith">Hook Optimization</button>
+        <button class="agent-kill-btn" data-agent="format_composer">Format Planning</button>
+        <button class="agent-kill-btn" data-agent="critic_mutator">Quality Review</button>
+      </div>
+    </div>
+
     <div class="modal-body" id="outputModalBody">
 
       <div class="swarm-loading" id="outputLoading" style="display: none;">
@@ -276,18 +289,6 @@
           <div class="swarm-loading-text">
             <strong>Building strategy...</strong>
             <span>Running swarm analysis and preparing your dashboard.</span>
-          </div>
-        </div>
-        <div class="swarm-agent-controls" id="swarmAgentControls">
-          <div class="swarm-agent-controls-label">Stop an agent</div>
-          <div class="swarm-agent-buttons">
-            <button class="agent-kill-btn agent-kill-random" id="killRandomBtn">Kill Random</button>
-            <button class="agent-kill-btn" data-agent="trend_scout">Trend Analysis</button>
-            <button class="agent-kill-btn" data-agent="audience_psychologist">Audience Strategy</button>
-            <button class="agent-kill-btn" data-agent="creator_fit">Creator Alignment</button>
-            <button class="agent-kill-btn" data-agent="hook_smith">Hook Optimization</button>
-            <button class="agent-kill-btn" data-agent="format_composer">Format Planning</button>
-            <button class="agent-kill-btn" data-agent="critic_mutator">Quality Review</button>
           </div>
         </div>
       </div>

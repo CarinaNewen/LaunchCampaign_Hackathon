@@ -1,0 +1,42 @@
+substitutions:
+  _REGION: us-central1
+  _SERVICE: ai-swarm
+  _AR_REPO: ai-swarm-repo
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$COMMIT_SHA
+      - .
+
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$COMMIT_SHA
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}
+      - --image
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$COMMIT_SHA
+      - --region
+      - ${_REGION}
+      - --platform
+      - managed
+      - --allow-unauthenticated
+      - --timeout
+      - "900"
+      - --max-instances
+      - "1"
+      - --set-env-vars
+      - GEMINI_ENABLED=true,GEMINI_MODEL=gemini-2.5-flash-lite,OLLAMA_ENABLED=false
+      - --set-secrets
+      - GEMINI_API_KEY=GEMINI_API_KEY:latest
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$COMMIT_SHA

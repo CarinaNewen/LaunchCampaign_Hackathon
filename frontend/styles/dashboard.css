@@ -115,8 +115,13 @@
 }
 
 .swarm-agent-controls {
-  border-top: 1px solid var(--border);
-  padding-top: 14px;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  background: #fafbff;
+}
+
+.swarm-agent-controls.is-hidden {
+  display: none;
 }
 
 .swarm-agent-controls-label {

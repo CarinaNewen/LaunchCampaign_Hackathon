@@ -26,7 +26,7 @@ def health() -> dict[str, str]:
 
 @app.get("/")
 def index() -> FileResponse:
-    return FileResponse("frontend/index.html")
+    return FileResponse("frontend/landing.html")
 
 
 # Serve CSS, JS and other static assets from the frontend/ folder.

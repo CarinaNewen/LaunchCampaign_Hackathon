@@ -12,9 +12,7 @@ function getApiBase() {
     ? window.location.origin : '';
   return configuredBase
     ? configuredBase
-    : (window.location && window.location.port === '8000' && pageOrigin)
-      ? pageOrigin
-      : 'http://127.0.0.1:8000';
+    : pageOrigin || 'http://127.0.0.1:8000';
 }
 
 function openLoading(runId) {
@@ -36,6 +34,7 @@ function openLoading(runId) {
   if (modalBox) modalBox.classList.remove('has-dashboard');
 
   resetKillButtons();
+  setKillControlsVisible(!!activeRunId);
 
   document.getElementById('outputModal').classList.add('open');
 }
@@ -69,6 +68,12 @@ function setShowStrategyReady(isReady) {
   showBtn.classList.toggle('ready', !!isReady);
 }
 
+function setKillControlsVisible(isVisible) {
+  const controls = document.getElementById('swarmAgentControls');
+  if (!controls) return;
+  controls.classList.toggle('is-hidden', !isVisible);
+}
+
 function openLiveDashboard(run) {
   const dashboard = document.getElementById('swarmDashboard');
   const loading   = document.getElementById('outputLoading');
@@ -85,6 +90,7 @@ function openLiveDashboard(run) {
   if (body) body.classList.remove('pre-only');
   if (modalBox) modalBox.classList.add('has-dashboard');
   resetKillButtons();
+  setKillControlsVisible(!!activeRunId);
   setShowStrategyReady(false);
   renderLiveRun(run);
   document.getElementById('outputModal').classList.add('open');
@@ -120,6 +126,7 @@ function scheduleRunPolling(runId, apiBase, token, startedAtMs) {
     if (token !== runPollToken) return;
     if (Date.now() - startedAtMs > POLL_TIMEOUT_MS) {
       activeRunId = null;
+      setKillControlsVisible(false);
       openError(new Error('Run timed out while waiting for live updates.'));
       setSubmitButtonLoading(false);
       return;
@@ -136,6 +143,7 @@ function scheduleRunPolling(runId, apiBase, token, startedAtMs) {
       if (run.final_output) {
         lastRun = run;
         activeRunId = null;
+        setKillControlsVisible(false);
         setShowStrategyReady(true);
         clearRunPolling();
         return;
@@ -248,6 +256,7 @@ document.getElementById('strategyForm').addEventListener('submit', async (e) => 
         renderLiveRun(run);
         setShowStrategyReady(true);
         activeRunId = null;
+        setKillControlsVisible(false);
         clearRunPolling();
         setSubmitButtonLoading(false);
       })
@@ -255,6 +264,7 @@ document.getElementById('strategyForm').addEventListener('submit', async (e) => 
         if (token !== runPollToken) return;
         clearRunPolling();
         activeRunId = null;
+        setKillControlsVisible(false);
         openError(error);
         setSubmitButtonLoading(false);
       });
@@ -264,6 +274,7 @@ document.getElementById('strategyForm').addEventListener('submit', async (e) => 
   } catch (err) {
     lastRun = null;
     activeRunId = null;
+    setKillControlsVisible(false);
     clearRunPolling();
     openError(err);
     setSubmitButtonLoading(false);
@@ -288,6 +299,7 @@ function openDashboard(run) {
   // Reset strategy button state
   showBtn.disabled = true;
   showBtn.classList.remove('ready');
+  setKillControlsVisible(!!activeRunId);
 
   renderSwarmFeed(run);
   renderMetrics(run);
@@ -329,6 +341,7 @@ function openError(err) {
   modalBox.classList.remove('has-dashboard');
   clearRunPolling();
   setShowStrategyReady(false);
+  setKillControlsVisible(false);
   setSwarmGraphExpanded(false);
 
   document.getElementById('outputModal').classList.add('open');
@@ -385,6 +398,7 @@ function closeModal() {
   runPollToken += 1;
   clearRunPolling();
   activeRunId = null;
+  setKillControlsVisible(false);
   stopSwarmGraph();
   setSwarmGraphExpanded(false);
   document.getElementById('outputModal').classList.remove('open');
